@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\UserMail;
+use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class LoginRegisterController extends Controller
 {
@@ -50,11 +53,16 @@ class LoginRegisterController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
+        // Send Mail 
+        Mail::to($request->email)->send(new WelcomeMail());
+
+        Mail::to('ximnewaz@gmail.com')->send(new WelcomeMail());
+
         $credentials = $request->only('email', 'password');
         Auth::attempt($credentials);
         $request->session()->regenerate();
-        return redirect()->route('dashboard')
-        ->withSuccess('You have successfully registered & logged in!');
+
+        return redirect()->route('dashboard')->withSuccess('You have successfully registered & logged in!');
     }
 
     /**
