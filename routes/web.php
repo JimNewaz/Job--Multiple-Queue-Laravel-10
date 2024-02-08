@@ -24,4 +24,6 @@
         Route::post('/authenticate', 'authenticate')->name('authenticate');
         Route::get('/dashboard', 'dashboard')->name('dashboard');
         Route::post('/logout', 'logout')->name('logout');
+
+        Route::get('send-otp', 'sendOtp')->name('send-otp');
     });

@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Jobs\SendMailJob;
+use App\Jobs\SendOtpJob;
 use App\Mail\UserMail;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Auth;
@@ -59,7 +60,12 @@ class LoginRegisterController extends Controller
         Auth::attempt($credentials);
         $request->session()->regenerate();
 
-        dispatch((new SendMailJob((object)$request->all())));
+        for($i=0; $i<10; $i++)
+        {
+            dispatch((new SendMailJob((object)$request->all()))->onQueue('default'));
+        }
+
+        // dispatch((new SendMailJob((object)$request->all())));
 
         return redirect()->route('dashboard')->withSuccess('You have successfully registered & logged in!');
     }
@@ -133,4 +139,9 @@ class LoginRegisterController extends Controller
             ->withSuccess('You have logged out successfully!');;
     }    
 
+    public function sendOtp()
+    {
+        dispatch((new SendOtpJob())->onQueue('high'));
+        return redirect()->route('dashboard')->withSuccess('OTP Sent Successfully!');
+    }
 }
